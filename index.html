@@ -52,7 +52,58 @@
         <h2>Get random card(s)</h2>
         <label>Number of cards to get: </label>
         <input type="number" id="ammount" name="ammount" placeholder="1-128" min="1" max="128" value="1"><br>
+    
+        <label>Select card colors:</label><br>
+        <input type="checkbox" id="color-white" value="w"> White<br>
+        <input type="checkbox" id="color-blue" value="u"> Blue<br>
+        <input type="checkbox" id="color-black" value="b"> Black<br>
+        <input type="checkbox" id="color-red" value="r"> Red<br>
+        <input type="checkbox" id="color-green" value="g"> Green<br>
+    
         <button type="button" id="random-gen-get">Get cards</button>
+    </div>
+    
+    <div class="commander-gen">
+        <h2>Commander Deck Generator</h2>
+        <div>
+            <label for="color-identity">Select the color identity of the deck:</label>
+            <select id="color-identity">
+                <option value="">Select a color identity</option>
+                <option value="W">White</option>
+                <option value="U">Blue</option>
+                <option value="B">Black</option>
+                <option value="R">Red</option>
+                <option value="G">Green</option>
+                <option value="WU">Azorius</option>
+                <option value="WB">Orzhov</option>
+                <option value="WR">Boros</option>
+                <option value="WG">Selesnya</option>
+                <option value="UB">Dimir</option>
+                <option value="UR">Izzet</option>
+                <option value="UG">Simic</option>
+                <option value="BR">Rakdos</option>
+                <option value="BG">Golgari</option>
+                <option value="RG">Gruul</option>
+                <option value="WUB">Esper</option>
+                <option value="WUR">Jeskai</option>
+                <option value="WUG">Bant</option>
+                <option value="WBR">Mardu</option>
+                <option value="WBG">Abzan</option>
+                <option value="WRG">Naya</option>
+                <option value="UBR">Grixis</option>
+                <option value="UBG">Sultai</option>
+                <option value="URG">Temur</option>
+                <option value="BRG">Jund</option>
+                <option value="WUBR">WUBR</option>
+                <option value="WUBG">WUBG</option>
+                <option value="WURG">WURG</option>
+                <option value="WBRG">WBRG</option>
+                <option value="UBRG">UBRG</option>
+                <option value="WUBRG">5 colors</option>
+            </select>
+        </div>
+        <button type="button" id="generate-commander-deck">Generate Commander Deck</button>
+        <span>Total cards: <span id="counter-total">0</span></span>
     </div>
 
     <div>

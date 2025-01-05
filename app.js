@@ -1,6 +1,7 @@
 import {addCardToList as editCardList, downloadCod, downloadDec, copyDecToClipboard} from "./deck.js"
 
 document.getElementById("scryfall-api-search-query").value = localStorage.getItem("query");
+document.getElementById("generate-commander-deck").addEventListener("click", generateCommanderDeck);
 
 // Buttons
 const btn_get_cards = document.getElementById("random-gen-get")
@@ -11,28 +12,95 @@ const btn_clear_lists = document.getElementById("btn-clear-lists")
 const counter_current = document.getElementById("counter-current")
 const counter_total = document.getElementById("counter-total")
 
-
 const SCRYFALL_API_RANDOM = "https://api.scryfall.com/cards/random?q="
 
 let time_performance_array = new Array
+//----------------------------------------------------------------------------------------New Code
+//Get the color identity from a commander
+//RETURNS: a color identity
+function getSelectedColorIdentity() {
+    return document.getElementById("color-identity").value;;
+}
 
+//Get a legendary creature as a commander
+//RETURNS: a commander card
+async function fetchLegendaryCreature(colorIdentity) {
+    const query = `t:legendary (t:creature) id:${colorIdentity}`;
+    const response = await fetch(`${SCRYFALL_API_RANDOM}${encodeURIComponent(query)}`);
+    const card = await response.json();
+    return card;
+}
 
+// Fonction pour récupérer des cartes non-créature correspondant à une identité de couleur
+// RETURNS: a cardlist
+async function fetchOtherCards(colorIdentity, count) {
+        const query = `id:${colorIdentity}`;
+        const cards = [];
+        for (let i = 0; i < count; i++) {
+            const response = await fetch(`${SCRYFALL_API_RANDOM}${encodeURIComponent(query)}`);
+            const card = await response.json();
+            cards.push(card);
+        }
+        return cards;
+}
+
+//Generate a commander deck
+async function generateCommanderDeck() {
+    try {
+
+        const commander = await fetchLegendaryCreature(getSelectedColorIdentity());
+        const colorIdentity = commander.color_identity.join("");
+        const otherCards = await fetchOtherCards(colorIdentity, 40);
+
+        displayInSimpleList(commander);
+        displayInTable(commander, getImageUris(commander));
+
+        otherCards.forEach(card => {
+            displayInSimpleList(card);
+            displayInTable(card, getImageUris(card));
+        });
+
+    } catch (error) {
+        console.error("Cannot generate commander deck:", error);
+    }
+}
+
+//Select colors for a search query
+function getSelectedColors() {
+    const colors = [];
+    const colorCheckboxes = ["color-white", "color-blue", "color-black", "color-red", "color-green"];
+    
+    colorCheckboxes.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox.checked) {
+            colors.push(checkbox.value);
+        }
+    });
+
+    return colors.length > 0 ? `color=${colors.join("")}` : "";
+}
 
 // Function to get the query (user input) from the form. (Local)
 // RETURNS: 'query' object (.plain and .uri)
 function getSearchQuery() {
-    let query = new Object
-    query.plain = document.getElementById("scryfall-api-search-query").value
-    query.uri = encodeURIComponent(query.plain)
+    let query = new Object();
+    const baseQuery = document.getElementById("scryfall-api-search-query").value;
+    const colors = getSelectedColors();
 
-    if (query.plain == "")  console.info("Query is empty")
-    else                    console.log("Query object: ", query)
+    query.plain = colors ? `${baseQuery} ${colors}`.trim() : baseQuery;
+    query.uri = encodeURIComponent(query.plain);
+
+    if (query.plain === "") {
+        console.info("Query is empty");
+    } else {
+        console.log("Query object: ", query);
+    }
 
     localStorage.setItem("query", query.plain);
-
-    return query
+    return query;
 }
 
+//----------------------------------------------------------------------------------------------------------------
 
 // Primary function to fetch card data, given the query.
 // RETURNS: Card JSON
